@@ -8,5 +8,5 @@ id|name|abstract|github
 5|PhotoPicke|图片选择|https://github.com/donglua/PhotoPicker
 6|glide|图片加载|https://github.com/bumptech/glide
 7|SmartRefreshLayout|上拉加载，下拉刷新|https://github.com/scwang90/SmartRefreshLayout
-8|recyclerview-swipe|可滑动删除列表空间|https://github.com/yanzhenjie/SwipeRecyclerView
+8|recyclerview-swipe|可滑动删除列表控件|https://github.com/yanzhenjie/SwipeRecyclerView
 9|bottom-navigation-bar|底部tab切换|https://github.com/Ashok-Varma/BottomNavigation
