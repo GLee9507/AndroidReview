@@ -11,18 +11,19 @@
 ***
 ## 技能清单
 - 具备 Android 应用的**独立开发**能力
-- 了解 Android 开发中的性能优化
-    - 内存优化：内存泄露/内存溢出/LRU缓存
-    - 布局优化：熟练使用 **ConstraintLayout** 局，**ViewStub** 控件和 **merge/include** 标签
+- 了解 Android 开发中的**性能优化**
+    - 内存优化：内存泄露/内存溢出/图片优化
+    - 绘制优化：熟练使用 **ConstraintLayout** 布局，**ViewStub** 控件和 **merge/include** 标签
 - 熟悉**模块化/组件化开发**流程，使用 ARouter/CC等框架进行模块化开发
 - 具备 **Kotlin** Android 应用开发能力
-- 理解 **HTTP/HTTPS** 协议原理，了解 **MQTT 协议**，封装使用 Android 中常用网络请求框架，如 **OkHttp3/Retrofit2** 
+- 熟悉 Android 中 **MVP**/**MVVM** 开发架构
+- 理解 **HTTP/HTTPS** 协议原理，了解 **MQTT 协议**，封装使用 Android 中常用网络请求框架，如 **OkHttp3/Retrofit2** ，自定义OkHttp**拦截器**
 - 熟练使用 **Rxjava2** 及其常用操作符
 - 对 Android FrameWork 层有一定了解
     - **Binder** 驱动原理
-    - **ActivityServiceManager/WindowServiceManager** 等常见系统服务的工作原理
+    - **ActivityManagerService/ActivityThread** 等常见系统服务的工作原理
 - 熟悉 **JNI/NDK** 开发
-- 对 **Linux** 操作系统有一定的理解，熟练使用 **Arch Linux** 等常见**发行版**作为工作环境
+- 对 **Linux** 操作系统较深理解，熟练使用 **Arch Linux** 等常见**发行版**作为工作环境
 - 熟悉 **Git/SVN** 版本控制
 
 ***
@@ -32,7 +33,7 @@
 - 薪资：7000
 
 
-### ×××患者端
+### ×××患者端 / 医生端
 一款综合医疗平台APP，主要涉及如下业务：
 - 诊断：线上诊断/约诊、在线阅片、健康自查
 - 医生查询：按科室、集团级别等查询医生并浏览医生详细信息
@@ -43,8 +44,9 @@
 - 地图：显示附近医院或药房，并显示详细信息
 
 **主要技术**
-- 使用CC框架模块化并行开发，模块解耦，可独立运行，代码责任制
-- 高度封装BaseActivity/BaseFragment/BaseLazyFragment，实现多状态布局、参考RxLifeCycler实现Rxjava生命周期绑定
+- 使用CC框架模块化并行开发，模块解耦，模块可独立运行，代码责任制
+- 高度封装BaseActivity/BaseFragment/BaseLazyFragment，实现多状态布局
+- 参考RxLifeCycler实现Rxjava生命周期绑定
 - Rxjava+Retrofit 封装，自定义OkHttp拦截器，实现sign自动生成
 - 自定义Rxjava的Observer，实现网络请求状态码统一处理
 - 部分模块使用Kotlin开发
