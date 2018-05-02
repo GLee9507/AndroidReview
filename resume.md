@@ -16,7 +16,7 @@
     - 绘制优化：熟练使用 **ConstraintLayout** 布局，**ViewStub** 控件和 **merge/include** 标签
 - 熟悉**模块化/组件化开发**流程，使用 ARouter/CC等框架进行模块化开发
 - 具备 **Kotlin** Android 应用开发能力
-- 熟悉 Android 中 **MVP**/**MVVM** 开发架构
+- 了解 Android 中 **MVP**/**MVVM** 开发架构
 - 理解 **HTTP/HTTPS** 协议原理，了解 **MQTT 协议**，封装使用 Android 中常用网络请求框架，如 **OkHttp3/Retrofit2** ，自定义OkHttp**拦截器**
 - 熟练使用 **Rxjava2** 及其常用操作符
 - 对 Android FrameWork 层有一定了解
