@@ -448,4 +448,4 @@ public class PlayerViewModel extends AndroidViewModel {
 5. View 层原则上不可以使用 LiveData#ObserveForever
 6. 当 ViewModel 所承载的业务逻辑过多时，考虑分割业务逻辑给 Presenter
 7. 尽可能的精简 XML 中的 DataBinding 代码
-8. 
+8.  
