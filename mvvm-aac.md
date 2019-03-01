@@ -293,7 +293,7 @@ public class PlayerViewModel extends ViewModel {
                     () -> {
                         //do something
                     }
-            );
+            ).build();
 }
 ```
 更新 RecyclerView 列表数据
