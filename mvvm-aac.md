@@ -4,6 +4,7 @@
 
 
 ## 为什么要用 MVVM
+## 为什么要用 MVVM
 传统 Android MVC 架构在迭代开发过程中会逐渐暴露出了许多缺陷，而基于 ACC 的 MVVM 架构可有效避免这些问题
 
 |     | 问题| 传统 MVC | MVVM-AAC|
@@ -33,7 +34,7 @@
 
 
 
-## [Android Architecture Components](https://developer.android.google.cn/topic/libraries/architecture)
+<!-- ## [Android Architecture Components](https://developer.android.google.cn/topic/libraries/architecture)
 Android Architecture Components 是一组库，可以构建健壮性、可测试性、可维护性比较高的应用程序
 ###  [Lifecycle](https://developer.android.google.cn/topic/libraries/architecture/lifecycle)
 轻松管理应用程序的生命周期。
@@ -61,7 +62,7 @@ DataBinding 在 XML 中可以使用以下运算符和关键字
 - 方法调用
 - 访问属性
 - 访问数组 []
-- 三元运算 ?:
+- 三元运算 ?: -->
 
 ## MVVM-AAC
 MVVM-AAC 是通过 Android Architecture Components 中的 ViewModel、Lifecycle、LiveData和DataBinding 实现的 MVVM 架构，是 Google 推荐的开发架构
@@ -438,7 +439,137 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 }
 ```
-## 单元测试与 LiveData 测试
+## 单元测试
+MVVM 架构的关注点分离原则的优势充分体现在单元测试中。因为 ViewModel 层是应用程序逻辑的主要处理者，并且其所包含的 LiveData 可以认为是 View 层各个元素的映射，所以针对 ViewModel 的 JUnit 单元测试可以代替一部分的 UI 测试。 
+
+单元测试应基于 JUnit，而不是 AndroidJUnit。因为 AndroidJUnit 依赖 Android 运行环境，若集成到服务端如 Jenkins 中则无法运行。 
+
+ViewModel 单元测试流程基本分为两个步骤
+1. 测试 ViewModel 方法
+
+2. 校验 LiveData
+    
+    因为 ViewModel 中的方法可能为异步操作，所以校验 LiveData 值时需要阻塞线程，等待异步回调后再进行检验。为了方便的取得LiveData 的值，封装了 LiveDataTestUtil 工具类。
+
+    因为 LiveData 内部线程切换用到了 android.os.Handler，所以测试时需要注册 TestTaskExecutorRule 
+
+```java
+public class LiveDataTestUtil {
+
+    /**
+     * 取 LiveData 的值。次方法会阻塞线程
+     *
+     * @param liveData 需要取值的 LiveData
+     * @param timeout  超时时间
+     * @param fun      测试方法
+     * @param <T>      LiveData 泛型
+     * @return LiveData 的值
+     * @throws InterruptedException 线程异常
+     * @throws TimeoutException     超时异常
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getValue(
+            final LiveData<T> liveData, 
+            long timeout, 
+            TestFun fun
+    ) throws InterruptedException, TimeoutException {
+        //{LiveData 的值, LiveData 是否回调的标记, LiveData 是否为空}
+        final Object[] data = new Object[3];
+        //退出死循环的标记
+        data[1] = false;
+        //liveData 的值是否胃口
+        data[2] = liveData.getValue() == null;
+        //观察者回调
+        Observer<T> observer = new Observer<T>() {
+            @Override
+            public void onChanged(@Nullable T o) {
+                //如果liveData 的为空，则判定此次回调有效。反之无效，取下一次回调
+                if ((Boolean) data[2]) {
+                    liveData.removeObserver(this);
+                    data[0] = o;
+                    data[1] = true;
+                } else {
+                    data[2] = true;
+                }
+            }
+        };
+        //调用 lambda 表达式
+        fun.test();
+        //注册观察者
+        liveData.observeForever(observer);
+        //计算超时循环次数
+        int count = (int) (timeout / 10);
+        while (!(Boolean) data[1]) {
+            Thread.sleep(10);
+            if (--count <= 0) {
+                throw new TimeoutException();
+            }
+        }
+        return (T) data[0];
+    }
+
+    public interface TestFun {
+        void test();
+    }
+
+}
+```
+```java
+public class TestTaskExecutorRule extends TestWatcher {
+    @Override
+    protected void starting(Description description) {
+        super.starting(description);
+        ArchTaskExecutor.getInstance().setDelegate(new TaskExecutor() {
+            @Override
+            public void executeOnDiskIO(@NonNull Runnable runnable) {
+                runnable.run();
+            }
+
+            /**
+             * LiveData postValue 切换到主线程所执行的方法
+             */
+            @Override
+            public void postToMainThread(@NonNull Runnable runnable) {
+                runnable.run();
+            }
+
+            @Override
+            public boolean isMainThread() {
+                return true;
+            }
+        });
+    }
+
+    @Override
+    protected void finished(Description description) {
+        super.finished(description);
+        ArchTaskExecutor.getInstance().setDelegate(null);
+    }
+}
+```
+
+示例
+```java
+public class ExampleUnitTest {
+
+    private MainViewModel mainViewModel;
+
+    @Rule
+    public TestTaskExecutorRule testTaskExecutorRule = new TestTaskExecutorRule();
+
+
+    @Before
+    public void init() {
+        mainViewModel = new MainViewModel();
+    }
+
+    @Test
+    public void test() throws InterruptedException, TimeoutException {
+        String value = LiveDataTestUtil.getValue(mainViewModel.getLiveData(), 3000, () -> mainViewModel.add());
+        assertEquals(value, "test");
+    }
+}
+```
 
 ## 开发要点
 
@@ -449,4 +580,6 @@ public class PlayerViewModel extends AndroidViewModel {
 5. View 层原则上不可以使用 LiveData#ObserveForever
 6. 当 ViewModel 所承载的业务逻辑过多时，考虑分割业务逻辑给 Presenter
 7. 尽可能的精简 XML 中的 DataBinding 代码
-8.  
+8. 页面的首次加载数据应在 ViewModel 中进行，建议在 ViewModel 中定义 start 方法
+9. 单元测试建议基于 JUnit
+10. ViewModel#onCleard 方法中需要取消异步、延时等任务，避免 ViewModel 泄漏 
