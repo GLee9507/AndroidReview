@@ -4,7 +4,6 @@
 
 
 ## 为什么要用 MVVM
-## 为什么要用 MVVM
 传统 Android MVC 架构在迭代开发过程中会逐渐暴露出了许多缺陷，而基于 ACC 的 MVVM 架构可有效避免这些问题
 
 |     | 问题| 传统 MVC | MVVM-AAC|
